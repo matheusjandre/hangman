@@ -12,23 +12,6 @@ typedef struct word
     char value[WORDSIZE + 1];
 } Word;
 
-int random(int min, int max)
-{
-    int shuffle = 1, x = -1;
-    srand(time(0));
-    x = rand();
-
-    while (shuffle)
-    {
-        x = (int)(x / max);
-
-        if ((x >= min) && (x <= max))
-            break;
-    }
-
-    return x;
-}
-
 int main(int argc, char **argv)
 {
     FILE *arq;
@@ -44,7 +27,6 @@ int main(int argc, char **argv)
 
     filePath = argv[1];
 
-    // abre o arquivo em escrita
     arq = fopen(filePath, "r");
 
     if (!arq)
@@ -53,29 +35,28 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-
     list = malloc(MAXWORD * sizeof(Word));
 
     wc = 0;
-    fgets(line, LINESIZE, arq); // tenta ler uma linha
-    while (!feof(arq))          // testa depois de tentar ler!
+    fgets(line, LINESIZE, arq);
+    while (!feof(arq))
     {
-        strcpy((list + wc)->value, line); // Salvando palavra na memoria;
+        strcpy((list + wc)->value, line);
 
-        fgets(line, LINESIZE, arq); // tenta ler a próxima linha
+        fgets(line, LINESIZE, arq);
         wc++;
     }
 
     fclose(arq);
 
     // Sortear palavra
-    r = random(0, wc);
+    srand(time(0));
+    r = rand() % wc;
 
     strcpy(selected, (list + r)->value);
 
     wordSize = strlen(selected);
 
-    //inicializando openWord
     int i;
     for (i = 0; i < (wordSize - 1); i++)
     {
@@ -91,17 +72,10 @@ int main(int argc, char **argv)
         printf(">>> %c\n", entry);
 
         for (int i = 0; i < (wordSize - 1); i++) // retirar \0
-        {
             if (selected[i] == entry)
-            {
                 openWord[i] = entry;
-            }
-            else
-            {
-                if (openWord[i] == '_')
-                    openWord[i] = '_';
-            }
-        }
+            else if (openWord[i] == '_')
+                openWord[i] = '_';
 
         trying++;
 
